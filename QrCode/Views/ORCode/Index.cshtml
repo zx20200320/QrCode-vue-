@@ -1,0 +1,73 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+    <script src="~/Scripts/jquery-3.3.1.js"></script>
+    <script type="text/javascript" language="javas">
+        $(function () {
+            $("#createBtn").click(function () {
+                createImage();
+            });
+
+            $("#analysisBtn").click(function () {
+                analysisImage();
+            })
+        });
+
+        function createImage() {
+            var content = $("#content").val();
+            $.post('/ORCode/GetORImage/',
+                {
+                    "content": content
+                },
+                function (data) {
+                    $("#imgDiv").empty();
+                    $("#imgDiv").append('<img id="ORImage"/>');
+                    $("#ORImage").attr("src", data);
+                });
+        }
+
+        //解析二维码
+        function analysisImage() {
+            //获取图片名称
+            var imageUrl = $('#ORImage').attr("src");
+            var array = imageUrl.split('/');
+            var imageName = array[array.length - 1]; //如:123.jpg
+
+            //ajax开始
+            $.post("/ORCode/GetORImageContent/",
+                { "imageName": imageName },
+                function (data) {
+                    $('#ORCodeContent').empty();
+                    $('#ORCodeContent').text(data);
+                });
+            //ajax结束
+        }
+    </script>
+</head>
+<body>
+    <div>
+        <div>
+            <textarea style="width:230px; height:120px" id="content"></textarea>
+            <br/>
+            <input type="button" style="width:230px;height:30px" value="生成二维码" id="createBtn" />
+        </div>
+        <div>
+            <textarea style="width:230px;height:120px" id="QRCodeContent"></textarea>
+
+            <br/>
+            <input id="analysisBtn" type="button" value="解析二维码" />
+
+        </div>
+        <div style="margin-top:20px" id="imgDiv"></div>
+    </div>
+</body>
+</html>
